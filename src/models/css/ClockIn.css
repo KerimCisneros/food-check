@@ -1,0 +1,74 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: url("/Hybrid Electric Resize.jpg") no-repeat center center fixed;
+    background-size: cover;
+    font-family: sans-serif;
+    position: relative;
+}
+
+/* Overlay for the entire background */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* semi-transparent black */
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Center the container using flexbox because im trash */
+#root, body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clockin-container {
+    position: relative;
+    z-index: 1;
+    max-width: 440px;        
+    width: 100%;
+    padding: 48px 36px;       
+    background: #0a3161;      
+    border-radius: 16px;      
+    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.22);
+    text-align: center;
+    color: #fff;
+    font-size: 1.15rem;       
+}
+
+.clockin-input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.clockin-btn {
+    padding: 10px 24px;
+    background: #0070f3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.clockin-btn:hover {
+    background: #005bb5;
+}
+
+.clockin-message {
+    margin-top: 18px;
+    font-weight: 500;
+    color: #fff;
+}
