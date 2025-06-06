@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import LunchPunchFunction from "../services/lunchpunch/ts/lunchPunchService";
 import type { LunchPunchRespose } from "../models/lunchPunchService/interfaces";
 import "../models/css/ClockIn.css";
@@ -7,16 +7,19 @@ const ClockIn: React.FC = () => {
     const [sso, setSso] = useState<number>(0);
     const [message, setMessage] = useState<string>("");
     const [authenticated, setAuthenticated] = useState<boolean>(false);
+    const successRef = useRef(new Audio('/Success.mp3'));
+    const failRef = useRef(new Audio('/failure.mp3'));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const PunchData: LunchPunchRespose = await LunchPunchFunction(sso);
         try {
-            console.log(PunchData)
             if (PunchData.Access === true) {
+                successRef.current.play();
                 setMessage(`Provecho, ${PunchData.UserName}`);
                 setAuthenticated(true);
             } else {
+                failRef.current.play();
                 setMessage("Invalid SSO. Please try again.");
                 setAuthenticated(false);
             }
