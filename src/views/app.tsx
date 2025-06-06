@@ -4,16 +4,18 @@ import type { LunchPunchRespose } from "../models/lunchPunchService/interfaces";
 import "../models/css/ClockIn.css";
 
 const ClockIn: React.FC = () => {
-    const [sso, setSso] = useState<number>(0);
+    const [sso, setSso] = useState<number>();
     const [message, setMessage] = useState<string>("");
     const [authenticated, setAuthenticated] = useState<boolean>(false);
     const successRef = useRef(new Audio('/Success.mp3'));
     const failRef = useRef(new Audio('/failure.mp3'));
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const PunchData: LunchPunchRespose = await LunchPunchFunction(sso);
         try {
+            const PunchData: LunchPunchRespose = await LunchPunchFunction(sso || 0);
             if (PunchData.Access === true) {
                 successRef.current.play();
                 setMessage(`Provecho, ${PunchData.UserName}`);
@@ -21,12 +23,15 @@ const ClockIn: React.FC = () => {
             } else {
                 failRef.current.play();
                 setMessage("Invalid SSO. Please try again.");
-                setAuthenticated(false);
-            }
+                if (inputRef.current) {
+                    inputRef.current.value = '';
+                    inputRef.current.focus();
+                };
+            };
         } catch (error) {
             console.error("Error during clock-in:", error);
             setMessage("An error occurred. Please try again later.");
-            setAuthenticated(true);
+            // setAuthenticated(true);
             throw error;
         }
     };
@@ -38,6 +43,9 @@ const ClockIn: React.FC = () => {
             }, 3000);
             return () => clearTimeout(timer);
         }
+        if (inputRef.current) {
+            inputRef.current.focus();
+        };
     }, [authenticated]);
 
     return (
@@ -45,8 +53,9 @@ const ClockIn: React.FC = () => {
             <h2>Clock-in Service</h2>
             <form onSubmit={handleSubmit}>
                 <input
+                    ref={inputRef}
+                    id="ssoinput"
                     onKeyDown={(event) => {
-                        // Allow navigation keys (backspace, delete, arrows, etc.)
                         if (
                             event.key !== 'Backspace' &&
                             event.key !== 'Delete' &&
@@ -56,6 +65,7 @@ const ClockIn: React.FC = () => {
                             event.key !== 'ArrowDown' &&
                             event.key !== 'Tab' &&
                             event.key !== 'Shift' &&
+                            event.key !== 'Enter' &&
                             !/^[0-9]$/.test(event.key) // Only allow digits
                         ) {
                             event.preventDefault();
@@ -63,10 +73,12 @@ const ClockIn: React.FC = () => {
                     }}
                     placeholder="Enter your SSO"
                     maxLength={9}
-                    onChange={(e) => setSso(Number(e.target.value))}
                     className="clockin-input"
                 />
-                <button type="submit" className="clockin-btn">Clock In</button>
+                <button type="submit" className="clockin-btn" onClick={() => {
+                    const num = document.getElementById('ssoinput') as HTMLInputElement;
+                    setSso((num === null ? 0 : Number(num.value)));
+                }}>Clock In</button>
             </form>
             {message && <p className="clockin-message">{message}</p>}
         </div>
